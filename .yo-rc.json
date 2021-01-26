@@ -1,0 +1,78 @@
+{
+  "yes": {
+    "configuration": {
+      "config": {
+        "configName": "config",
+        "topScope": [
+          "const path = require('path');",
+          "const webpack = require('webpack');",
+          "\n",
+          "/*\n * We've enabled Postcss, autoprefixer and precss for you. This allows your app\n * to lint  CSS, support variables and mixins, transpile future CSS syntax,\n * inline images, and more!\n *\n * To enable SASS or LESS, add the respective loaders to module.rules\n *\n * https://github.com/postcss/postcss\n *\n * https://github.com/postcss/autoprefixer\n *\n * https://github.com/jonathantneal/precss\n *\n */",
+          "const autoprefixer = require('autoprefixer');",
+          "const precss = require('precss');",
+          "\n",
+          "/*\n * We've enabled MiniCssExtractPlugin for you. This allows your app to\n * use css modules that will be moved into a separate CSS file instead of inside\n * one of your module entries!\n *\n * https://github.com/webpack-contrib/mini-css-extract-plugin\n *\n */",
+          "const MiniCssExtractPlugin = require('mini-css-extract-plugin');",
+          "\n"
+        ],
+        "webpackOptions": {
+          "mode": "'development'",
+          "entry": "'./frontend/ts/index.ts.ts'",
+          "output": {
+            "path": "path.resolve(__dirname, 'public/js/')"
+          },
+          "plugins": [
+            "new webpack.ProgressPlugin()",
+            "new MiniCssExtractPlugin({ filename:'main.[contenthash].css' })"
+          ],
+          "module": {
+            "rules": [
+              {
+                "test": "/\\.(ts|tsx)$/",
+                "loader": "'ts-loader'",
+                "include": [
+                  "path.resolve(__dirname, 'frontend/ts')"
+                ],
+                "exclude": [
+                  "/node_modules/"
+                ]
+              },
+              {
+                "test": "/.css$/",
+                "use": [
+                  {
+                    "loader": "MiniCssExtractPlugin.loader"
+                  },
+                  {
+                    "loader": "\"css-loader\"",
+                    "options": {
+                      "importLoaders": 1,
+                      "sourceMap": true
+                    }
+                  },
+                  {
+                    "loader": "\"postcss-loader\"",
+                    "options": {
+                      "plugins": "function () {\n\t\t\t\t\t\t\treturn [\n\t\t\t\t\t\t\t\tprecss,\n\t\t\t\t\t\t\t\tautoprefixer\n\t\t\t\t\t\t\t];\n\t\t\t\t\t\t}"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "resolve": {
+            "extensions": [
+              "'.tsx'",
+              "'.ts'",
+              "'.js'"
+            ]
+          },
+          "devServer": {
+            "open": true,
+            "host": "'localhost'"
+          }
+        }
+      }
+    }
+  }
+}

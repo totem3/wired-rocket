@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <script src="/assets/js/main.js"></script>
+    <title>Wired Rocket Chat</title>
+    <style>
+        [aria-selected=true] {
+            --tw-bg-opacity: 1;
+            background-color: rgba(191,219,254,var(--tw-bg-opacity));
+        }
+    </style>
+</head>
+<body>
+    <div class="w-screen h-screen overflow-y-hidden">
+        <div class="flex flex-row">
+            <div class="flex flex-col flex-shrink-0 w-96 h-screen bg-red-50 text-xl">
+                <p class="p-4 mb-4 text-3xl text-gray-600 font-bold">Rooms</p>
+                <turbo-frame id="rooms">
+                    <ul>
+                        {{#each room_contexts}}
+                            <div aria-selected="{{ this.current }}">
+                            <a id="room_list_{{ this.room.id }}" href="/?room_id={{ this.room.id }}" data-turbo-frame="_top">
+                            <li class="px-4 hover:bg-red-200"
+                                data-room-id="{{ this.room.id }}">
+                                {{ this.room.name }}
+                            </li>
+                            </a>
+                            </div>
+                        {{/each}}
+                    </ul>
+                </turbo-frame>
+            </div>
+            <div class="flex flex-col flex-grow w-full h-screen">
+                <div class="flex h-16 border-b-2 p-4">
+                    <turbo-frame id="room_name">
+                        <div class="flex">
+                            {{#each room_contexts}}
+                                {{#if this.current }}
+                                    <h2 id="room_title_{{this.room.id}}" class="mr-4">
+                                        {{ this.room.name }}
+                                    </h2>
+                                    <a href="/rooms/{{this.room.id}}/edit"><i class="fas fa-pen"></i></a>
+                                {{/if}}
+                            {{/each}}
+                        </div>
+                    </turbo-frame>
+                </div>
+                <div class="flex overflow-scroll">
+                    <ul>
+                        <turbo-frame id="messages_{{#each room_contexts}}{{#if this.current}}{{ this.room.id }}{{/if}}{{/each}}">
+                            {{#each messages}}
+                                <li class="p-4">
+                                    {{ nl2br this.content }}
+                                </li>
+                            {{/each}}
+                        </turbo-frame>
+
+                    </ul>
+                </div>
+                <div class="flex w-full h-64">
+                    <turbo-frame id="new_message_{{#each room_contexts}}{{#if this.current }}{{ this.room.id }}{{/if}}{{/each}}"
+                        class="w-full">
+                        <form class="w-full h-full" action="/messages" method="post"
+                              data-controller="reset-form" data-action="turbo:submit-end->reset-form#reset">
+                            <input type="hidden" name="room_id" value="{{#each room_contexts}}{{#if this.current }}{{ this.room.id }}{{/if}}{{/each}}">
+                            <textarea class="border-t-4 border-b-4 w-full h-52 resize-none" name="content"></textarea>
+                            <input class="border p-2" type="submit">
+                        </form>
+                    </turbo-frame>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

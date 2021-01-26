@@ -1,0 +1,7 @@
+<turbo-stream action="append" target="messages_{{ new_message.room_id }}">
+    <template>
+        <li class="p-4">
+            {{ nl2br new_message.content }}
+        </li>
+    </template>
+</turbo-stream>
