@@ -8,8 +8,7 @@ use diesel::{Connection, QueryDsl, RunQueryDsl};
 use crate::models::message::Message;
 use crate::models::room::Room;
 
-pub enum Action {
-    RenameRoom(u64, String),
+pub enum Action { RenameRoom(u64, String),
     NewMessage(u64),
     NewRoom(u64),
 }
