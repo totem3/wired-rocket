@@ -6,10 +6,12 @@ use std::thread::spawn;
 use diesel::{Connection, QueryDsl, RunQueryDsl};
 
 use crate::models::message::Message;
+use crate::models::room::Room;
 
 pub enum Action {
     RenameRoom(u64, String),
     NewMessage(u64),
+    NewRoom(u64),
 }
 
 pub struct Broker {
@@ -83,6 +85,29 @@ pub fn launch<A: ToSocketAddrs>(addr: A, rx: Receiver<Action>) {
                         </turbo-stream>
                         "#,
                     room_id =  message.room_id, content = message.content
+                )));
+            }
+            Ok(Action::NewRoom(room_id)) => {
+                use crate::schema::rooms;
+                let url = "mysql://root:root@127.0.0.1:3306/chat";
+                let conn = diesel::MysqlConnection::establish(url).unwrap();
+                let room: Room = rooms::table.find(room_id).first(&conn).unwrap();
+                broker.write_all(tungstenite::Message::text(format!(
+                    r#"
+                        <turbo-stream action="append" target="rooms">
+                            <template>
+                                <div aria-selected="false">
+                                <a id="room_list_{room_id}" href="/?room_id={room_id}" data-turbo-frame="_top">
+                                <li class="px-4 hover:bg-red-200"
+                                    data-room-id="{room_id}">
+                                    {room_name}
+                                </li>
+                                </a>
+                                </div>
+                            </template>
+                        </turbo-stream>
+                        "#,
+                    room_id = room.id, room_name = room.name
                 )));
             }
             _ => {}

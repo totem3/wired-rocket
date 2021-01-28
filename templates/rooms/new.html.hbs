@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <script src="/assets/js/main.js"></script>
+    <title>Wired Rocket Chat</title>
+    <style>
+        [aria-selected=true] {
+            --tw-bg-opacity: 1;
+            background-color: rgba(191,219,254,var(--tw-bg-opacity));
+        }
+    </style>
+</head>
+<body>
+<div class="w-screen">
+    <div class="flex flex-col flex-grow w-full">
+        <turbo-frame id="new_room">
+        <div class="p-4 mb-4">
+            <p class="text-3xl mb-2 text-gray-600 font-bold">Rooms</p>
+            <p>Add a new room</p>
+            <form method="post" action="/rooms">
+                <input class="border p-1 mb-2" placeholder="name for a new room" type="text" name="name">
+                <input class="border p-1 bg-color-gray-100" type="submit" value="submit!">
+            </form>
+        </turbo-frame>
+    </div>
+</div>
+</body>
+</html>

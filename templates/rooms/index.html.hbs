@@ -19,7 +19,12 @@
     <div class="w-screen h-screen overflow-y-hidden">
         <div class="flex flex-row">
             <div class="flex flex-col flex-shrink-0 w-96 h-screen bg-red-50 text-xl">
-                <p class="p-4 mb-4 text-3xl text-gray-600 font-bold">Rooms</p>
+                <turbo-frame id="new_room">
+                <div class="p-4 mb-4 flex flex-row justify-between">
+                    <p class="text-3xl text-gray-600 font-bold">Rooms</p>
+                    <a class="py-1" href="/rooms/new"><i class="fas fa-plus"></i></a>
+                </div>
+                </turbo-frame>
                 <turbo-frame id="rooms">
                     <ul>
                         {{#each room_contexts}}
@@ -50,7 +55,7 @@
                         </div>
                     </turbo-frame>
                 </div>
-                <div class="flex overflow-scroll">
+                <div class="flex flex-grow overflow-scroll">
                     <ul>
                         <turbo-frame id="messages_{{#each room_contexts}}{{#if this.current}}{{ this.room.id }}{{/if}}{{/each}}">
                             {{#each messages}}

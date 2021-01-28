@@ -47,7 +47,9 @@ fn main() {
             routes![
                 routes::rooms::index,
                 routes::rooms::create_message,
+                routes::rooms::new_room,
                 routes::rooms::edit_room,
+                routes::rooms::create_room,
                 routes::rooms::update_room
             ],
         )

@@ -12,7 +12,7 @@ use crate::diesel::RunQueryDsl;
 use crate::models::message::{Message, NewMessage};
 use crate::web_socket_server::{Action, MessageChannel};
 use crate::DBConnection;
-use crate::models::room::Room;
+use crate::models::room::{Room, NewRoom};
 
 #[derive(Debug, Serialize)]
 struct RoomIndexContext {
@@ -68,6 +68,38 @@ pub fn index(conn: DBConnection, room_id: Option<u64>) -> Template {
         messages,
     };
     Template::render("rooms/index", &context)
+}
+
+#[get("/rooms/new")]
+pub fn new_room() -> Template {
+    Template::render("rooms/new", ())
+}
+
+#[post("/rooms", format = "multipart", data = "<data>")]
+pub fn create_room(
+    channel: State<MessageChannel>,
+    conn: DBConnection,
+    content_type: &ContentType,
+    data: Data,
+) -> Redirect {
+    use crate::schema::rooms;
+    let options = MultipartFormDataOptions::with_multipart_form_data_fields(vec![
+        MultipartFormDataField::text("name"),
+    ]);
+    let mut message_form = MultipartFormData::parse(content_type, data, options).unwrap();
+    let name = message_form.texts.remove("name").unwrap()[0].text.clone();
+    let new_room = NewRoom { name };
+    diesel::insert_into(rooms::table)
+        .values(&new_room)
+        .execute(&conn.0)
+        .expect("failed to create a new room");
+
+    let new_room_id = diesel::select(last_insert_id).first(&conn.0).unwrap();
+
+    let tx = channel.0.clone();
+    let _ = tx.send(Action::NewRoom(new_room_id));
+
+    Redirect::found(uri! {index: room_id = _ })
 }
 
 no_arg_sql_function!(
